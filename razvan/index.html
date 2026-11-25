@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0e14">
+<title>Grafup Charts</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #131722;
+    --border: #2a2e39;
+    --text: #d1d4dc;
+    --muted: #868b98;
+    --accent: #2962ff;
+    --btn: #1e222d;
+  }
+  /* Mod zi: alb-negru */
+  :root[data-theme="light"] {
+    --bg: #ffffff;
+    --panel: #ffffff;
+    --border: #d6d6d6;
+    --text: #111111;
+    --muted: #666666;
+    --accent: #111111;
+    --btn: #f2f2f2;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+  body { display: flex; flex-direction: column; overflow: hidden; }
+
+  header { display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+    background: var(--panel); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .sep { width: 1px; height: 36px; background: var(--border); margin: 0 4px; }
+
+  button { appearance: none; border: 1px solid var(--border); background: var(--btn); color: var(--text);
+    font-size: 18px; font-weight: 600; padding: 12px 18px; border-radius: 10px; cursor: pointer;
+    min-height: 52px; min-width: 64px; touch-action: manipulation; }
+  button:active { transform: scale(.97); }
+  button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .tf button { min-width: 56px; padding: 12px 12px; }
+  .icon { font-size: 22px; }
+
+  main { flex: 1; min-height: 0; display: grid; gap: 4px; padding: 4px; }
+  main.single { grid-template-columns: 1fr; }
+  main.split  { grid-template-columns: 1fr 1fr; }
+  .chart { min-height: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--panel); }
+  .chart > div { width: 100%; height: 100%; }
+
+  @media (max-width: 900px) {
+    main.split { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+    button { font-size: 16px; min-height: 46px; padding: 10px 12px; }
+  }
+</style>
+<script src="https://s3.tradingview.com/tv.js"></script>
+</head>
+<body>
+<header>
+  <div class="row" id="symbols"></div>
+  <div class="sep"></div>
+  <div class="row tf" id="intervals"></div>
+  <div class="sep"></div>
+  <div class="row">
+    <button id="layoutBtn" class="icon" title="Un chart / două charturi">◫</button>
+    <button id="themeBtn" class="icon" title="Zi / noapte">☀</button>
+    <button id="fsBtn" class="icon" title="Ecran complet">⛶</button>
+  </div>
+</header>
+<main id="main" class="single">
+  <div class="chart"><div id="chart1"></div></div>
+  <div class="chart" id="chart2wrap" hidden><div id="chart2"></div></div>
+</main>
+
+<script>
+// Editează lista asta ca să adaugi / schimbi charturile.
+const SYMBOLS = [
+  { label: "US30",   symbol: "OANDA:US30USD" },
+  { label: "NAS100", symbol: "OANDA:NAS100USD" },
+  { label: "SPX500", symbol: "OANDA:SPX500USD" },
+  { label: "DAX",    symbol: "OANDA:DE30EUR" },
+  { label: "UK100",  symbol: "OANDA:UK100GBP" },
+  { label: "GOLD",   symbol: "OANDA:XAUUSD" },
+  { label: "SILVER", symbol: "OANDA:XAGUSD" },
+  { label: "OIL",    symbol: "TVC:USOIL" },
+  { label: "EURUSD", symbol: "FX:EURUSD" },
+  { label: "GBPUSD", symbol: "FX:GBPUSD" },
+  { label: "USDJPY", symbol: "FX:USDJPY" },
+  { label: "BTC",    symbol: "BITSTAMP:BTCUSD" },
+  { label: "ETH",    symbol: "BITSTAMP:ETHUSD" },
+];
+const INTERVALS = [
+  { label: "1m", v: "1" }, { label: "5m", v: "5" }, { label: "15m", v: "15" },
+  { label: "1H", v: "60" }, { label: "4H", v: "240" }, { label: "D", v: "D" },
+];
+
+const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+
+const state = load("grafup", { symbol: SYMBOLS[0].symbol, symbol2: SYMBOLS[1].symbol, interval: "5", split: false });
+// în split, butoanele de simbol schimbă chartul selectat (1 sau 2)
+let target = 1;
+
+function makeChart(containerId, symbol) {
+  document.getElementById(containerId).innerHTML = "";
+  const light = state.theme === "light";
+  new TradingView.widget({
+    container_id: containerId,
+    autosize: true,
+    symbol,
+    interval: state.interval,
+    timezone: "Europe/Bucharest",
+    theme: light ? "light" : "dark",
+    style: "1",
+    // modul zi: lumânări alb-negru
+    overrides: light ? {
+      "mainSeriesProperties.candleStyle.upColor": "#ffffff",
+      "mainSeriesProperties.candleStyle.downColor": "#000000",
+      "mainSeriesProperties.candleStyle.borderUpColor": "#000000",
+      "mainSeriesProperties.candleStyle.borderDownColor": "#000000",
+      "mainSeriesProperties.candleStyle.wickUpColor": "#000000",
+      "mainSeriesProperties.candleStyle.wickDownColor": "#000000",
+    } : {},
+    locale: "en",
+    hide_side_toolbar: true,
+    allow_symbol_change: true,
+    withdateranges: false,
+    save_image: false,
+    backgroundColor: light ? "#ffffff" : "#131722",
+  });
+}
+
+function render() {
+  save("grafup", state);
+  const light = state.theme === "light";
+  document.documentElement.dataset.theme = light ? "light" : "dark";
+  document.querySelector('meta[name="theme-color"]').content = light ? "#ffffff" : "#0b0e14";
+  document.getElementById("themeBtn").textContent = light ? "☾" : "☀";
+  const main = document.getElementById("main");
+  main.className = state.split ? "split" : "single";
+  document.getElementById("chart2wrap").hidden = !state.split;
+  document.getElementById("layoutBtn").classList.toggle("active", state.split);
+  makeChart("chart1", state.symbol);
+  if (state.split) makeChart("chart2", state.symbol2);
+  drawButtons();
+}
+
+function drawButtons() {
+  const active = target === 2 && state.split ? state.symbol2 : state.symbol;
+  const s = document.getElementById("symbols");
+  s.innerHTML = "";
+  if (state.split) {
+    [1, 2].forEach(n => {
+      const b = document.createElement("button");
+      b.textContent = "Chart " + n;
+      b.style.opacity = target === n ? "1" : ".55";
+      b.onclick = () => { target = n; drawButtons(); };
+      s.appendChild(b);
+    });
+    const d = document.createElement("div"); d.className = "sep"; s.appendChild(d);
+  }
+  SYMBOLS.forEach(x => {
+    const b = document.createElement("button");
+    b.textContent = x.label;
+    if (x.symbol === active) b.classList.add("active");
+    b.onclick = () => {
+      if (state.split && target === 2) state.symbol2 = x.symbol; else state.symbol = x.symbol;
+      render();
+    };
+    s.appendChild(b);
+  });
+  const t = document.getElementById("intervals");
+  t.innerHTML = "";
+  INTERVALS.forEach(x => {
+    const b = document.createElement("button");
+    b.textContent = x.label;
+    if (x.v === state.interval) b.classList.add("active");
+    b.onclick = () => { state.interval = x.v; render(); };
+    t.appendChild(b);
+  });
+}
+
+document.getElementById("layoutBtn").onclick = () => { state.split = !state.split; target = 1; render(); };
+document.getElementById("themeBtn").onclick = () => { state.theme = state.theme === "light" ? "dark" : "light"; render(); };
+document.getElementById("fsBtn").onclick = () => {
+  const el = document.documentElement;
+  if (!document.fullscreenElement) (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el);
+  else (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+};
+
+render();
+</script>
+</body>
+</html>
