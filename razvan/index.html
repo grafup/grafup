@@ -44,6 +44,15 @@
   .tf button { min-width: 38px; padding: 6px 8px; }
   .icon { font-size: 16px; }
 
+  /* Prețul mare, live, deasupra chartului */
+  #quotes { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px 4px 0;
+    background: var(--bg); }
+  .quote { height: 118px; overflow: hidden; border: 1px solid var(--border); border-radius: 6px; background: var(--panel);
+    display: flex; justify-content: center; }
+  .quote .tradingview-widget-container { width: 320px; flex: none; transform: scale(2.2); transform-origin: top center; }
+  .quote .tradingview-widget-copyright { display: none; }
+  @media (max-width: 900px) { .quote .tradingview-widget-container { transform: scale(1.4); } .quote { height: 78px; } }
+
   main { flex: 1; min-height: 0; display: grid; gap: 4px; padding: 4px; }
   main.single { grid-template-columns: 1fr; }
   main.split  { grid-template-columns: 1fr 1fr; }
@@ -69,6 +78,7 @@
     <button id="fsBtn" class="icon" title="Ecran complet">⛶</button>
   </div>
 </header>
+<div id="quotes"></div>
 <main id="main" class="single">
   <div class="chart"><div id="chart1"></div></div>
   <div class="chart" id="chart2wrap" hidden><div id="chart2"></div></div>
@@ -132,6 +142,28 @@ function makeChart(containerId, symbol) {
   });
 }
 
+// Widget TradingView „Single Quote”: preț live + variație, mărit cu CSS
+function drawQuotes(symbols) {
+  const box = document.getElementById("quotes");
+  box.innerHTML = "";
+  const light = state.theme === "light";
+  symbols.forEach(sym => {
+    const q = document.createElement("div");
+    q.className = "quote";
+    const c = document.createElement("div");
+    c.className = "tradingview-widget-container";
+    const w = document.createElement("div");
+    w.className = "tradingview-widget-container__widget";
+    const s = document.createElement("script");
+    s.src = "https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js";
+    s.async = true;
+    s.text = JSON.stringify({ symbol: sym, width: 320, colorTheme: light ? "light" : "dark", isTransparent: true, locale: "en" });
+    c.append(w, s);
+    q.appendChild(c);
+    box.appendChild(q);
+  });
+}
+
 function render() {
   save("grafup", state);
   const light = state.theme === "light";
@@ -144,6 +176,7 @@ function render() {
   document.getElementById("layoutBtn").classList.toggle("active", state.split);
   makeChart("chart1", state.symbol);
   if (state.split) makeChart("chart2", state.symbol2);
+  drawQuotes(state.split ? [state.symbol, state.symbol2] : [state.symbol]);
   drawButtons();
 }
 
