@@ -47,11 +47,11 @@
   /* Prețul mare, live, deasupra chartului */
   #quotes { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px 4px 0;
     background: var(--bg); }
-  .quote { height: 86px; overflow: hidden; border: 1px solid var(--border); border-radius: 6px; background: var(--panel);
+  .quote { height: 68px; overflow: hidden; border: 1px solid var(--border); border-radius: 6px; background: var(--panel);
     display: flex; justify-content: center; }
-  .quote .tradingview-widget-container { width: 320px; flex: none; transform: scale(1.6); transform-origin: top center; }
+  .quote .tradingview-widget-container { width: 320px; flex: none; transform: scale(1.25); transform-origin: top center; }
   .quote .tradingview-widget-copyright { display: none; }
-  @media (max-width: 900px) { .quote .tradingview-widget-container { transform: scale(1.1); } .quote { height: 60px; } }
+  @media (max-width: 900px) { .quote .tradingview-widget-container { transform: scale(1); } .quote { height: 56px; } }
 
   main { flex: 1; min-height: 0; display: grid; gap: 4px; padding: 4px; }
   main.single { grid-template-columns: 1fr; }
