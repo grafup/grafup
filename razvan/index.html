@@ -45,13 +45,12 @@
   .icon { font-size: 16px; }
 
   /* Prețul mare, live, deasupra chartului */
-  #quotes { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px 4px 0;
-    background: var(--bg); }
-  .quote { height: 68px; overflow: hidden; border: 1px solid var(--border); border-radius: 6px; background: var(--panel);
-    display: flex; justify-content: center; }
-  .quote .tradingview-widget-container { width: 320px; flex: none; transform: scale(1.25); transform-origin: top center; }
+  /* Prețul live, în bara de sus, după ultimul buton */
+  #quotes { display: flex; gap: 6px; align-items: center; }
+  .quote { width: 272px; height: 52px; overflow: hidden; border: 1px solid var(--border); border-radius: 7px;
+    background: var(--btn); }
+  .quote .tradingview-widget-container { width: 320px; transform: scale(.85); transform-origin: top left; }
   .quote .tradingview-widget-copyright { display: none; }
-  @media (max-width: 900px) { .quote .tradingview-widget-container { transform: scale(1); } .quote { height: 56px; } }
 
   main { flex: 1; min-height: 0; display: grid; gap: 4px; padding: 4px; }
   main.single { grid-template-columns: 1fr; }
@@ -77,8 +76,8 @@
     <button id="themeBtn" class="icon" title="Zi / noapte">☀</button>
     <button id="fsBtn" class="icon" title="Ecran complet">⛶</button>
   </div>
+  <div id="quotes"></div>
 </header>
-<div id="quotes"></div>
 <main id="main" class="single">
   <div class="chart"><div id="chart1"></div></div>
   <div class="chart" id="chart2wrap" hidden><div id="chart2"></div></div>
