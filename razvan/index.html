@@ -47,12 +47,12 @@
   /* Prețul live, în bara de sus, imediat după ultimul buton.
      Din widget se vede doar partea cu prețul (dreapta); numele îl punem noi în stânga. */
   #quotes { display: flex; gap: 6px; align-items: center; }
-  .quote { display: flex; align-items: center; height: 56px; padding-left: 10px; overflow: hidden;
+  .quote { display: flex; align-items: center; height: 64px; padding-left: 10px; overflow: hidden;
     border: 1px solid var(--border); border-radius: 7px; background: var(--btn); }
-  .qlabel { font-size: 13px; font-weight: 700; color: var(--muted); }
-  .qwin { position: relative; width: 175px; height: 56px; overflow: hidden; }
-  .quote .tradingview-widget-container { position: absolute; top: -10px; right: 0; width: 320px;
-    transform: scale(1.15); transform-origin: top right; }
+  .qlabel { font-size: 14px; font-weight: 700; color: var(--muted); }
+  .qwin { position: relative; width: 205px; height: 64px; overflow: hidden; }
+  .quote .tradingview-widget-container { position: absolute; top: -17px; right: 0; width: 320px;
+    transform: scale(1.35); transform-origin: top right; }
   .quote .tradingview-widget-copyright { display: none; }
 
   main { flex: 1; min-height: 0; display: grid; gap: 4px; padding: 4px; }
@@ -72,14 +72,17 @@
 <header>
   <div class="row" id="symbols"></div>
   <div class="sep"></div>
-  <div class="row tf" id="intervals"></div>
-  <div class="sep"></div>
+  <!-- rândul 2: prețul, apoi timeframe-urile și butoanele (rămân împreună) -->
   <div class="row">
-    <button id="layoutBtn" class="icon" title="Un chart / două charturi">◫</button>
-    <button id="themeBtn" class="icon" title="Zi / noapte">☀</button>
-    <button id="fsBtn" class="icon" title="Ecran complet">⛶</button>
+    <div id="quotes"></div>
+    <div class="row tf" id="intervals"></div>
+    <div class="sep"></div>
+    <div class="row">
+      <button id="layoutBtn" class="icon" title="Un chart / două charturi">◫</button>
+      <button id="themeBtn" class="icon" title="Zi / noapte">☀</button>
+      <button id="fsBtn" class="icon" title="Ecran complet">⛶</button>
+    </div>
   </div>
-  <div id="quotes"></div>
 </header>
 <main id="main" class="single">
   <div class="chart"><div id="chart1"></div></div>
