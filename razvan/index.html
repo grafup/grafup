@@ -44,12 +44,15 @@
   .tf button { min-width: 38px; padding: 6px 8px; }
   .icon { font-size: 16px; }
 
-  /* Prețul mare, live, deasupra chartului */
-  /* Prețul live, în bara de sus, după ultimul buton */
+  /* Prețul live, în bara de sus, imediat după ultimul buton.
+     Din widget se vede doar partea cu prețul (dreapta); numele îl punem noi în stânga. */
   #quotes { display: flex; gap: 6px; align-items: center; }
-  .quote { width: 272px; height: 52px; overflow: hidden; border: 1px solid var(--border); border-radius: 7px;
-    background: var(--btn); }
-  .quote .tradingview-widget-container { width: 320px; transform: scale(.85); transform-origin: top left; }
+  .quote { display: flex; align-items: center; height: 56px; padding-left: 10px; overflow: hidden;
+    border: 1px solid var(--border); border-radius: 7px; background: var(--btn); }
+  .qlabel { font-size: 13px; font-weight: 700; color: var(--muted); }
+  .qwin { position: relative; width: 175px; height: 56px; overflow: hidden; }
+  .quote .tradingview-widget-container { position: absolute; top: -10px; right: 0; width: 320px;
+    transform: scale(1.15); transform-origin: top right; }
   .quote .tradingview-widget-copyright { display: none; }
 
   main { flex: 1; min-height: 0; display: grid; gap: 4px; padding: 4px; }
@@ -101,7 +104,7 @@ const SYMBOLS = [
   { label: "ETH",    symbol: "BITSTAMP:ETHUSD" },
 ];
 const INTERVALS = [
-  { label: "1m", v: "1" }, { label: "5m", v: "5" }, { label: "15m", v: "15" },
+  { label: "1m", v: "1" }, { label: "3m", v: "3" }, { label: "5m", v: "5" }, { label: "15m", v: "15" },
   { label: "1H", v: "60" }, { label: "4H", v: "240" }, { label: "D", v: "D" },
 ];
 
@@ -158,7 +161,13 @@ function drawQuotes(symbols) {
     s.async = true;
     s.text = JSON.stringify({ symbol: sym, width: 320, colorTheme: light ? "light" : "dark", isTransparent: true, locale: "en" });
     c.append(w, s);
-    q.appendChild(c);
+    const label = document.createElement("span");
+    label.className = "qlabel";
+    label.textContent = (SYMBOLS.find(x => x.symbol === sym) || { label: sym }).label;
+    const win = document.createElement("div");
+    win.className = "qwin";
+    win.appendChild(c);
+    q.append(label, win);
     box.appendChild(q);
   });
 }
