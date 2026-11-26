@@ -30,19 +30,19 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
   body { display: flex; flex-direction: column; overflow: hidden; }
 
-  header { display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+  header { display: flex; align-items: center; gap: 8px; padding: 6px 10px;
     background: var(--panel); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 
-  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .sep { width: 1px; height: 36px; background: var(--border); margin: 0 4px; }
+  .row { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+  .sep { width: 1px; height: 24px; background: var(--border); margin: 0 2px; }
 
   button { appearance: none; border: 1px solid var(--border); background: var(--btn); color: var(--text);
-    font-size: 18px; font-weight: 600; padding: 12px 18px; border-radius: 10px; cursor: pointer;
-    min-height: 52px; min-width: 64px; touch-action: manipulation; }
+    font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: 7px; cursor: pointer;
+    min-height: 34px; min-width: 44px; touch-action: manipulation; }
   button:active { transform: scale(.97); }
   button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .tf button { min-width: 56px; padding: 12px 12px; }
-  .icon { font-size: 22px; }
+  .tf button { min-width: 38px; padding: 6px 8px; }
+  .icon { font-size: 16px; }
 
   main { flex: 1; min-height: 0; display: grid; gap: 4px; padding: 4px; }
   main.single { grid-template-columns: 1fr; }
@@ -52,7 +52,7 @@
 
   @media (max-width: 900px) {
     main.split { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
-    button { font-size: 16px; min-height: 46px; padding: 10px 12px; }
+    button { font-size: 12px; min-height: 32px; padding: 5px 8px; }
   }
 </style>
 <script src="https://s3.tradingview.com/tv.js"></script>
